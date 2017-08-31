@@ -1,0 +1,63 @@
+.Square
+{
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    border: 1px solid rgba(0, 0, 0, .1);
+    font-family: monospace;
+    font-weight: bold;
+    user-select: none;
+    cursor: pointer;
+}
+
+.Square:hover
+{
+    background-color: rgba(0, 0, 0, .05);
+}
+
+.Square__content_1
+{
+    color: blue;
+}
+
+.Square__content_2
+{
+    color: green;
+}
+
+.Square__content_3
+{
+    color: red;
+}
+
+.Square__content_4
+{
+    color: purple;
+}
+
+.Square__content_5
+{
+    color: maroon;
+}
+
+.Square__content_6
+{
+    color: turquoise;
+}
+
+.Square__content_7
+{
+    color: black;
+}
+
+.Square__content_8
+{
+    color: gray;
+}
+
+/*
+ * 5 Maroon
+ * 6 Turquoise
+ * 7 Black
+ * 8 Gray
+ */

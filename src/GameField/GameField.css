@@ -1,0 +1,9 @@
+.GameField
+{
+    display: inline-block;
+}
+
+.GameField__row
+{
+    display: flex;
+}
