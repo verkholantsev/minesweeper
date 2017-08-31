@@ -8,11 +8,19 @@
     font-weight: bold;
     user-select: none;
     cursor: pointer;
+    background-color: rgba(0, 0, 0, .05);
+    text-align: center;
 }
 
 .Square:hover
 {
-    background-color: rgba(0, 0, 0, .05);
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.Square__opened,
+.Square__opened:hover
+{
+    background-color: transparent;
 }
 
 .Square__content_1

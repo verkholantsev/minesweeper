@@ -6,12 +6,12 @@ function Square(props) {
 
     let className = 'Square';
     if (isOpened) {
-        className = `${className} Square__content_${nearestMinesCount}`;
+        className = `${className} Square__opened Square__content_${nearestMinesCount}`;
     }
 
     let content = null;
     if (!isOpened) {
-        content = '-';
+        content = '';
     } else if (hasMine) {
         content = '💣';
     } else if (nearestMinesCount > 0) {

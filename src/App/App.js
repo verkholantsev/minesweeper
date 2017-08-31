@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import GameField from './GameField/GameField';
+import GameField from '../GameField/GameField';
 
 function generateField(width, height, minesCount) {
     let field = [];
