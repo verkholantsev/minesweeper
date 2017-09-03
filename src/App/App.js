@@ -9,7 +9,13 @@ function generateField(width, height, minesCount) {
         field.push([]);
 
         for (let y = 0; y < height; y++) {
-            field[x].push({hasMine: 0, isOpened: 0, isVisitedTag: null});
+            field[x].push({
+                hasMine: 0,
+                isOpened: 0,
+                isVisitedTag: null,
+                x,
+                y
+            });
         }
     }
 
@@ -27,8 +33,8 @@ function generateField(width, height, minesCount) {
     return field;
 }
 
-function traverseNearestSquares(field, x, y, fn) {
-    const squaresToTraverse = [
+function getNearestSquaresCoords(field, x, y) {
+    const nearestSquaresCoords = [
         {x: x - 1, y       }, // N
         {x: x - 1, y: y + 1}, // NE
         {x,        y: y + 1}, // E
@@ -39,15 +45,24 @@ function traverseNearestSquares(field, x, y, fn) {
         {x: x - 1, y: y - 1}, // NW
     ];
 
-    squaresToTraverse.forEach(({x, y}) => {
+    return nearestSquaresCoords.filter(({x, y}) => {
         const row = field[x];
         if (!row) {
-            return;
+            return false;
         }
         const square = row[y];
         if (!square) {
-            return;
+            return false;
         }
+        return true;
+    });
+}
+
+function traverseNearestSquares(field, x, y, fn) {
+    const squaresToTraverse = getNearestSquaresCoords(field, x, y);
+
+    squaresToTraverse.forEach(({x, y}) => {
+        const square = field[x][y];
         fn(square, x, y);
     });
 }
@@ -74,17 +89,26 @@ function generateMineCoords(field, width, height) {
     return {x, y};
 }
 
-function handleSquareClick(field, x, y, isVisitedTag = new Date().valueOf()) {
-    const square = field[x][y];
-    square.isOpened = 1;
-    square.isVisitedTag = isVisitedTag;
+function handleSquareClick(field, x, y) {
+    const queue = [field[x][y]];
+    const isVisitedTag = new Date().valueOf();
 
-    if (square.nearestMinesCount === 0 && !square.hasMine) {
-        traverseNearestSquares(field, x, y, (square, newX, newY) => {
-            if (square.isVisitedTag !== isVisitedTag) {
-                handleSquareClick(field, newX, newY, isVisitedTag);
-            }
-        });
+    while (queue.length > 0) {
+        const square = queue.shift();
+        square.isOpened = 1;
+
+        if (square.nearestMinesCount === 0 && !square.hasMine) {
+            const nearestSquaresCoords = getNearestSquaresCoords(field, square.x, square.y);
+            const squaresToAddToQueue = nearestSquaresCoords
+                .map(({x, y}) => field[x][y])
+                .filter(square => square.isVisitedTag !== isVisitedTag);
+
+            squaresToAddToQueue.forEach(square => {
+                square.isVisitedTag = isVisitedTag;
+            });
+
+            queue.push(...squaresToAddToQueue);
+        }
     }
 
     return field;
