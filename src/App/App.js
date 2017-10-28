@@ -14,7 +14,7 @@ function generateField(width, height, minesCount) {
                 isOpened: 0,
                 isVisitedTag: null,
                 x,
-                y
+                y,
             });
         }
     }

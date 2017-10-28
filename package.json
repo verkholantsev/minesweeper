@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "prop-types": "^15.6.0",
     "react": "16",
     "react-dom": "16"
   },
   "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-plugin-react": "^7.4.0",
     "gh-pages": "^1.0.0",
     "react-scripts": "1.0.10"
   },
@@ -16,7 +19,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "lint": "eslint src"
   },
   "homepage": "https://verkholantsev.github.io/minesweeper"
 }

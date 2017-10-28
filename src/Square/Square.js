@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import './Square.css';
 
 function Square(props) {
@@ -22,5 +23,12 @@ function Square(props) {
         <div className={className} onClick={onClick}>{content}</div>
     );
 }
+
+Square.propTypes = {
+    hasMine: PropTypes.number,
+    isOpened: PropTypes.number,
+    nearestMinesCount: PropTypes.number,
+    onClick: PropTypes.func,
+};
 
 export default Square;
