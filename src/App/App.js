@@ -6,6 +6,12 @@ import MinesLeftCount from '../MinesLeftCount/MinesLeftCount';
 
 import './App.css';
 
+const GameState = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    WIN: 'WIN',
+    LOSE: 'LOSE',
+};
+
 function generateField(width, height, minesCount) {
     let field = [];
 
@@ -133,6 +139,16 @@ function handleSquareRightClick(field, x, y) {
     return field;
 }
 
+function openField(field) {
+    for (let x = 0; x < field.length; x++) {
+        for (let y = 0; y < field[x].length; y++) {
+            field[x][y] = {...field[x][y], isOpened: 1};
+        }
+    }
+
+    return field;
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -141,6 +157,7 @@ class App extends Component {
 
         this.state = {
             field: generateField(10, 10, minesCount),
+            gameState: GameState.IN_PROGRESS,
             minesLeftCount: minesCount,
         };
     }
@@ -148,7 +165,7 @@ class App extends Component {
     render() {
         return (
             <div className='App'>
-                <MinesLeftCount className='App__mineLeftCount' count={this.state.minesLeftCount}/>
+                {this._renderGameState()}
                 <div className='App__gameFieldWrapper'>
                     <GameField
                         field={this.state.field}
@@ -159,7 +176,31 @@ class App extends Component {
         );
     }
 
+    _renderGameState() {
+        const {gameState, minesLeftCount} = this.state;
+
+        switch (gameState) {
+        case GameState.IN_PROGRESS:
+            return <MinesLeftCount className='App__mineLeftCount' count={minesLeftCount}/>;
+        case GameState.WIN:
+            return <div className='App__mineLeftCount'>😎</div>;
+        case GameState.LOSE:
+            return <div className='App__mineLeftCount'>😫</div>;
+        default:
+            throw new Error(`Unexpected game state: ${gameState}`);
+        }
+    }
+
     _onSquareClick({x, y}) {
+        const {hasMine} = this.state.field[x][y];
+        if (hasMine) {
+            this.setState({
+                field: openField(this.state.field),
+                gameState: GameState.LOSE,
+            });
+            return;
+        }
+
         const field = handleSquareClick(this.state.field, x, y);
         this.setState({field});
     }
