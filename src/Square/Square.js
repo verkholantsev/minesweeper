@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 import './Square.css';
 
 function Square(props) {
-    const {hasMine, isOpened, nearestMinesCount, onClick} = props;
+    const {
+        hasFlag,
+        hasMine,
+        isOpened,
+        nearestMinesCount,
+        onClick,
+        onContextMenu,
+    } = props;
 
     let className = 'Square';
     if (isOpened) {
@@ -12,7 +19,7 @@ function Square(props) {
 
     let content = null;
     if (!isOpened) {
-        content = '';
+        content = hasFlag ? 'F' : '';
     } else if (hasMine) {
         content = '💣';
     } else if (nearestMinesCount > 0) {
@@ -20,15 +27,22 @@ function Square(props) {
     }
 
     return (
-        <div className={className} onClick={onClick}>{content}</div>
+        <div
+            className={className}
+            onClick={onClick}
+            onContextMenu={onContextMenu}>
+            {content}
+        </div>
     );
 }
 
 Square.propTypes = {
+    hasFlag: PropTypes.number,
     hasMine: PropTypes.number,
     isOpened: PropTypes.number,
     nearestMinesCount: PropTypes.number,
     onClick: PropTypes.func,
+    onContextMenu: PropTypes.func,
 };
 
 export default Square;

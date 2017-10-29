@@ -1,6 +1,10 @@
+import 'babel-polyfill';
+
 import React, {Component} from 'react';
-import './App.css';
 import GameField from '../GameField/GameField';
+import MinesLeftCount from '../MinesLeftCount/MinesLeftCount';
+
+import './App.css';
 
 function generateField(width, height, minesCount) {
     let field = [];
@@ -10,6 +14,7 @@ function generateField(width, height, minesCount) {
 
         for (let y = 0; y < height; y++) {
             field[x].push({
+                hasFlag: 0,
                 hasMine: 0,
                 isOpened: 0,
                 isVisitedTag: null,
@@ -90,11 +95,19 @@ function generateMineCoords(field, width, height) {
 }
 
 function handleSquareClick(field, x, y) {
+    if (field[x][y].hasFlag) {
+        return field;
+    }
+
     const queue = [field[x][y]];
     const isVisitedTag = new Date().valueOf();
 
     while (queue.length > 0) {
         const square = queue.shift();
+        if (square.hasFlag) {
+            continue;
+        }
+
         square.isOpened = 1;
 
         if (square.nearestMinesCount === 0 && !square.hasMine) {
@@ -114,21 +127,34 @@ function handleSquareClick(field, x, y) {
     return field;
 }
 
+function handleSquareRightClick(field, x, y) {
+    const {hasFlag} = field[x][y];
+    field[x][y] = {...field[x][y], hasFlag: hasFlag === 0 ? 1 : 0};
+    return field;
+}
+
 class App extends Component {
     constructor() {
         super();
 
+        const minesCount = 10;
+
         this.state = {
-            field: generateField(10, 10, 10),
+            field: generateField(10, 10, minesCount),
+            minesLeftCount: minesCount,
         };
     }
 
     render() {
         return (
             <div className='App'>
-                <GameField
-                    field={this.state.field}
-                    onSquareClick={data => this._onSquareClick(data)}/>
+                <MinesLeftCount className='App__mineLeftCount' count={this.state.minesLeftCount}/>
+                <div className='App__gameFieldWrapper'>
+                    <GameField
+                        field={this.state.field}
+                        onSquareClick={data => this._onSquareClick(data)}
+                        onSquareRightClick={data => this._onSquareRightClick(data)}/>
+                </div>
             </div>
         );
     }
@@ -136,6 +162,21 @@ class App extends Component {
     _onSquareClick({x, y}) {
         const field = handleSquareClick(this.state.field, x, y);
         this.setState({field});
+    }
+
+    _onSquareRightClick({x, y}) {
+        const {isOpened, hasFlag} = this.state.field[x][y];
+        const {minesLeftCount} = this.state;
+        if (isOpened || (minesLeftCount === 0 && !hasFlag)) {
+            return;
+        }
+
+        const field = handleSquareRightClick(this.state.field, x, y);
+
+        this.setState({
+            field,
+            minesLeftCount: hasFlag ? minesLeftCount + 1 : minesLeftCount - 1,
+        });
     }
 }
 
