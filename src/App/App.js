@@ -20,9 +20,9 @@ function generateField(width, height, minesCount) {
 
         for (let y = 0; y < height; y++) {
             field[x].push({
-                hasFlag: 0,
-                hasMine: 0,
-                isOpened: 0,
+                hasFlag: false,
+                hasMine: false,
+                isOpened: false,
                 isVisitedTag: null,
                 x,
                 y,
@@ -32,7 +32,7 @@ function generateField(width, height, minesCount) {
 
     for (let i = 0; i < minesCount; i++) {
         const {x, y} = generateMineCoords(field, width, height);
-        field[x][y].hasMine = 1;
+        field[x][y].hasMine = true;
     }
 
     for (let x = 0; x < width; x++) {
@@ -114,7 +114,7 @@ function handleSquareClick(field, x, y) {
             continue;
         }
 
-        square.isOpened = 1;
+        square.isOpened = true;
 
         if (square.nearestMinesCount === 0 && !square.hasMine) {
             const nearestSquaresCoords = getNearestSquaresCoords(field, square.x, square.y);
@@ -135,14 +135,14 @@ function handleSquareClick(field, x, y) {
 
 function handleSquareRightClick(field, x, y) {
     const {hasFlag} = field[x][y];
-    field[x][y] = {...field[x][y], hasFlag: hasFlag === 0 ? 1 : 0};
+    field[x][y] = {...field[x][y], hasFlag: !hasFlag};
     return field;
 }
 
 function openField(field) {
     for (let x = 0; x < field.length; x++) {
         for (let y = 0; y < field[x].length; y++) {
-            field[x][y] = {...field[x][y], isOpened: 1};
+            field[x][y] = {...field[x][y], isOpened: true};
         }
     }
 

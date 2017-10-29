@@ -37,9 +37,9 @@ function Square(props) {
 }
 
 Square.propTypes = {
-    hasFlag: PropTypes.number,
-    hasMine: PropTypes.number,
-    isOpened: PropTypes.number,
+    hasFlag: PropTypes.bool,
+    hasMine: PropTypes.bool,
+    isOpened: PropTypes.bool,
     nearestMinesCount: PropTypes.number,
     onClick: PropTypes.func,
     onContextMenu: PropTypes.func,
