@@ -19,7 +19,7 @@ function Square(props) {
 
     let content = null;
     if (!isOpened) {
-        content = hasFlag ? 'F' : '';
+        content = hasFlag ? '⛳️' : '';
     } else if (hasMine) {
         content = '💣';
     } else if (nearestMinesCount > 0) {

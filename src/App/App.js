@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import GameField from '../GameField/GameField';
 import MinesLeftCount from '../MinesLeftCount/MinesLeftCount';
 
@@ -100,9 +101,18 @@ function generateMineCoords(field, width, height) {
     return {x, y};
 }
 
-function handleSquareClick(field, x, y) {
-    if (field[x][y].hasFlag) {
-        return field;
+function handleSquareClick(state, x, y, minesCount) {
+    const {field} = state;
+    const {hasFlag, hasMine} = field[x][y];
+
+    if (hasFlag) {
+        return state;
+    } else if (hasMine) {
+        return {
+            ...state,
+            field: openField(field),
+            gameState: GameState.LOSE,
+        };
     }
 
     const queue = [field[x][y]];
@@ -130,13 +140,35 @@ function handleSquareClick(field, x, y) {
         }
     }
 
-    return field;
+    if (getClosedSquaresCount(field) === minesCount) {
+        return {
+            ...state,
+            field: openField(field),
+            gameState: GameState.WIN,
+        };
+    }
+
+    return {
+        ...state,
+        field,
+    };
 }
 
-function handleSquareRightClick(field, x, y) {
-    const {hasFlag} = field[x][y];
+function handleSquareRightClick(state, x, y) {
+    const {field, minesLeftCount} = state;
+    const {hasFlag, isOpened} = field[x][y];
+
+    if (isOpened || (minesLeftCount === 0 && !hasFlag)) {
+        return state;
+    }
+
     field[x][y] = {...field[x][y], hasFlag: !hasFlag};
-    return field;
+
+    return {
+        ...state,
+        field,
+        minesLeftCount: hasFlag ? minesLeftCount + 1 : minesLeftCount - 1,
+    };
 }
 
 function openField(field) {
@@ -149,14 +181,31 @@ function openField(field) {
     return field;
 }
 
-class App extends Component {
-    constructor() {
-        super();
+function getClosedSquaresCount(field) {
+    let closedCount = 0;
+    for (let row of field) {
+        for (let col of row) {
+            if (!col.isOpened) {
+                closedCount++;
+            }
+        }
+    }
+    return closedCount;
+}
 
-        const minesCount = 10;
+class App extends Component {
+    constructor(props) {
+        super(props);
+
+        const {
+            minesCount,
+            width,
+            height,
+        } = props;
 
         this.state = {
-            field: generateField(10, 10, minesCount),
+            closedSquaresCount: width * height,
+            field: generateField(width, height, minesCount),
             gameState: GameState.IN_PROGRESS,
             minesLeftCount: minesCount,
         };
@@ -192,17 +241,8 @@ class App extends Component {
     }
 
     _onSquareClick({x, y}) {
-        const {hasMine} = this.state.field[x][y];
-        if (hasMine) {
-            this.setState({
-                field: openField(this.state.field),
-                gameState: GameState.LOSE,
-            });
-            return;
-        }
-
-        const field = handleSquareClick(this.state.field, x, y);
-        this.setState({field});
+        const state = handleSquareClick(this.state, x, y, this.props.minesCount);
+        this.setState(() => state);
     }
 
     _onSquareRightClick({x, y}) {
@@ -212,13 +252,21 @@ class App extends Component {
             return;
         }
 
-        const field = handleSquareRightClick(this.state.field, x, y);
-
-        this.setState({
-            field,
-            minesLeftCount: hasFlag ? minesLeftCount + 1 : minesLeftCount - 1,
-        });
+        const state = handleSquareRightClick(this.state, x, y);
+        this.setState(() => state);
     }
 }
+
+App.defaultProps = {
+    height: 10,
+    minesCount: 10,
+    width: 10,
+};
+
+App.propTypes = {
+    height: PropTypes.number,
+    minesCount: PropTypes.number,
+    width: PropTypes.number,
+};
 
 export default App;
